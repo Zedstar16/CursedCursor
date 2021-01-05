@@ -27,21 +27,29 @@ void ascii() {
 }
 
 int main() {
-    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+
+    const int FOREGROUND_AQUA = 26;
+    const int FOREGROUND_LIGHT_GREEN = 27;
+
     std::string str = "Cursed_Cursor.exe";
     for (int i = 0; i <= str.length(); i++) {
         std::string part = "title " + str.substr(0, i);
         system(part.c_str());
-        Sleep(50);
+        Sleep(20);
     }
+    SetConsoleTextAttribute(hConsole, FOREGROUND_AQUA);
     ascii();
+    SetConsoleTextAttribute(hConsole, FOREGROUND_LIGHT_GREEN);
 
-    const char *lines[5] = {
-            "Keybinds:",
+    const char *lines[8] = {
             "",
+            "Keybinds:",
+            "--------------------------------------",
             "F7 - Toggle cursor locking",
             "F8 - Toggle visibility of this window",
-            "F9 - Kills program"
+            "F9 - Kills program",
+            "--------------------------------------",
+            ""
     };
     for (auto &line : lines) {
         std::cout << line << std::endl;
@@ -53,11 +61,16 @@ int main() {
         Sleep(1);
         if (GetAsyncKeyState(VK_F7) & 0x8000) {
             active = !active;
-            Sleep(100);
+            if(show_window) {
+                std::string output = "> Cursor lock ";
+                SetConsoleTextAttribute(hConsole, active ? FOREGROUND_GREEN : FOREGROUND_RED);
+                output.append(active ? "enabled" : "disabled");
+                std::cout << output.c_str() << std::endl;
+            }
+            Sleep(300);
         }
         if (GetAsyncKeyState(VK_F8) & 0x8000) {
             show_window = !show_window;
-            Sleep(100);
             HWND window;
             AllocConsole();
             window = FindWindowA("ConsoleWindowClass", nullptr);
@@ -66,6 +79,7 @@ int main() {
             } else {
                 ShowWindow(window, 0);
             }
+            Sleep(500);
         }
         if (GetAsyncKeyState(VK_F9) & 0x8000) {
             exit(0);
